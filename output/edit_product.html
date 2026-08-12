@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Product</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f6f9; }
+        nav { background: #2c3e50; padding: 14px 24px; display: flex; gap: 20px; }
+        nav a { color: #ecf0f1; text-decoration: none; font-size: 16px; padding: 8px 16px; border-radius: 4px; transition: background 0.2s; }
+        nav a:hover { background: #34495e; }
+        .container { max-width: 600px; margin: 40px auto; padding: 0 20px; }
+        h1 { color: #2c3e50; }
+        form { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        label { display: block; margin-bottom: 6px; font-weight: 600; color: #2c3e50; }
+        input[type="text"], input[type="number"] { width: 100%; padding: 10px 12px; margin-bottom: 18px; border: 1px solid #dcdde1; border-radius: 4px; font-size: 14px; box-sizing: border-box; }
+        button[type="submit"] { background: #3498db; color: #fff; padding: 12px 24px; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; margin-right: 10px; }
+        button[type="submit"]:hover { background: #2980b9; }
+        .btn-danger { background: #e74c3c; color: #fff; padding: 12px 24px; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn-danger:hover { background: #c0392b; }
+        .back-link { display: inline-block; margin-top: 16px; color: #3498db; text-decoration: none; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+<nav>
+    <a href="index.html">Dashboard</a>
+    <a href="products.html">View Products</a>
+    <a href="add_product.html">Add Product</a>
+    <a href="edit_product.html">Edit Product</a>
+</nav>
+<div class="container">
+    <h1>Edit Product</h1>
+    
+    <form method="POST" class="generic-form" data-entity="product" data-id="1">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" value="Widget">
+        <label for="price">Price</label>
+        <input type="number" id="price" name="price" value="25" step="0.01">
+        <label for="image">Image URL</label>
+        <input type="text" id="image" name="image" value="">
+        <label for="details">Details</label>
+        <input type="text" id="details" name="details" value="A very useful widget">
+        <button type="submit">Save Changes</button>
+        <a class="btn-danger btn-delete" href="index.html?delete=1" data-entity="product" data-id="1">Delete</a>
+    </form>
+    
+    <a class="back-link" href="products.html">&larr; Back to Products</a>
+</div>
+<script src="script.js"></script>
+</body>
+</html>

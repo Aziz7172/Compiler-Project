@@ -1,0 +1,328 @@
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 0,
+  "columnNumber": 0,
+  "statements": [
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 0,
+  "name": {
+  "nodeName": "ASTNode",
+  "lineNumber": 1,
+  "name": "flask"
+},
+  "importedList": {
+  "nodeName": "ASTNode",
+  "lineNumber": 0,
+  "importedNames": [
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 1,
+  "name": {
+  "nodeName": "ASTNode",
+  "lineNumber": 1,
+  "name": "Flask"
+},
+  "alias": null
+}
+  ]
+}
+},
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 2,
+  "variableName": "app",
+  "value": {
+  "nodeName": "ASTNode",
+  "lineNumber": 2,
+  "functionName": null,
+  "functionTarget": {
+  "nodeName": "ASTNode",
+  "lineNumber": 2,
+  "name": "Flask"
+},
+  "arguments": [
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 2,
+  "name": "",
+  "value": {
+  "nodeName": "ASTNode",
+  "lineNumber": 2,
+  "name": "__name__"
+}
+}
+  ]
+}
+},
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 4,
+  "variableName": "products",
+  "value": {
+  "nodeName": "ASTNode",
+  "lineNumber": 4,
+  "elements": [
+{
+  "nodeName": "ASTNode",
+  "nodeType": "JSONNode",
+  "lineNumber": 4,
+  "columnNumber": 0
+},
+{
+  "nodeName": "ASTNode",
+  "nodeType": "JSONNode",
+  "lineNumber": 4,
+  "columnNumber": 0
+},
+{
+  "nodeName": "ASTNode",
+  "nodeType": "JSONNode",
+  "lineNumber": 4,
+  "columnNumber": 0
+}
+  ]
+}
+},
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 7,
+  "name": "index",
+  "parameters": [
+  ],
+  "body": [
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 8,
+  "variableName": "total",
+  "value": {
+  "nodeName": "ASTNode",
+  "lineNumber": 8,
+  "operator": "+",
+  "left": {
+  "nodeName": "ASTNode",
+  "lineNumber": 8,
+  "value": 50
+},
+  "right": {
+  "nodeName": "ASTNode",
+  "lineNumber": 8,
+  "value": "\"text\""
+}
+}
+},
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 9,
+  "value": {
+  "nodeName": "ASTNode",
+  "lineNumber": 9,
+  "functionName": null,
+  "functionTarget": {
+  "nodeName": "ASTNode",
+  "lineNumber": 9,
+  "name": "str"
+},
+  "arguments": [
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 9,
+  "name": "",
+  "value": {
+  "nodeName": "ASTNode",
+  "lineNumber": 9,
+  "name": "total"
+}
+}
+  ]
+}
+}
+  ],
+  "decorators": [
+  ]
+},
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 12,
+  "value": {
+  "nodeName": "ASTNode",
+  "lineNumber": 12,
+  "value": "\"module level return outside function\""
+}
+},
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 15,
+  "name": "show_products",
+  "parameters": [
+  ],
+  "body": [
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 16,
+  "variableName": "price",
+  "value": {
+  "nodeName": "ASTNode",
+  "lineNumber": 16,
+  "name": "undefined_var"
+}
+},
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 17,
+  "value": {
+  "nodeName": "ASTNode",
+  "lineNumber": 17,
+  "functionName": null,
+  "functionTarget": {
+  "nodeName": "ASTNode",
+  "lineNumber": 17,
+  "name": "str"
+},
+  "arguments": [
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 17,
+  "name": "",
+  "value": {
+  "nodeName": "ASTNode",
+  "lineNumber": 17,
+  "name": "price"
+}
+}
+  ]
+}
+}
+  ],
+  "decorators": [
+  ]
+},
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 21,
+  "name": "show_products_duplicate",
+  "parameters": [
+  ],
+  "body": [
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 22,
+  "value": {
+  "nodeName": "ASTNode",
+  "lineNumber": 22,
+  "value": "\"duplicate route\""
+}
+}
+  ],
+  "decorators": [
+  ]
+},
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 26,
+  "name": "product_details",
+  "parameters": [
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 26,
+  "name": "id",
+  "defaultValue": null
+}
+  ],
+  "body": [
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 27,
+  "value": {
+  "nodeName": "ASTNode",
+  "lineNumber": 27,
+  "object": {
+  "nodeName": "ASTNode",
+  "lineNumber": 27,
+  "name": "products"
+},
+  "index": {
+  "nodeName": "ASTNode",
+  "lineNumber": 27,
+  "value": 0
+}
+}
+}
+  ],
+  "decorators": [
+  ]
+},
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 31,
+  "name": "add_product",
+  "parameters": [
+  ],
+  "body": [
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 32,
+  "value": {
+  "nodeName": "ASTNode",
+  "lineNumber": 32,
+  "value": "\"add product\""
+}
+}
+  ],
+  "decorators": [
+  ]
+},
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 36,
+  "name": "edit_product",
+  "parameters": [
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 36,
+  "name": "id",
+  "defaultValue": null
+}
+  ],
+  "body": [
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 37,
+  "value": {
+  "nodeName": "ASTNode",
+  "lineNumber": 37,
+  "value": "\"edit product\""
+}
+}
+  ],
+  "decorators": [
+  ]
+},
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 41,
+  "name": "delete_product",
+  "parameters": [
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 41,
+  "name": "id",
+  "defaultValue": null
+}
+  ],
+  "body": [
+{
+  "nodeName": "ASTNode",
+  "lineNumber": 42,
+  "value": {
+  "nodeName": "ASTNode",
+  "lineNumber": 42,
+  "value": "\"delete product\""
+}
+}
+  ],
+  "decorators": [
+  ]
+}
+  ]
+}

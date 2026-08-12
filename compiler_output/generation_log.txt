@@ -1,0 +1,30 @@
+=== Global Context (extracted from Python source) ===
+
+Context Summary:
+Context{
+  Scope 0: {app=null, products=[{id=1, name=Widget, price=25, details=A very useful widget}, {id=2, name=Gadget, price=45, details=An amazing new gadget}, {id=3, name=Doohickey, price=15, details=A cheap and cheerful doohickey}], product={id=1, name=Widget, price=25, details=A very useful widget}, students=[{name=Alice, grade=A}, {name=Bob, grade=B}, {name=Charlie, grade=A}], iterations=[1, 2, 3], user_name=Admin, context_size=6, templates=[add_product.jinja, edit_product.jinja, index.jinja, products.jinja, product_details.jinja, students.jinja]}
+}
+
+Templates discovered (Phase 3):
+  1. .\templates\add_product.jinja
+  2. .\templates\edit_product.jinja
+  3. .\templates\index.jinja
+  4. .\templates\product_details.jinja
+  5. .\templates\products.jinja
+  6. .\templates\students.jinja
+
+Code-gen outputs (Phase 4):
+  1. .\output\add_product.html
+  2. .\output\edit_product.html
+  3. .\output\index.html
+  4. .\output\product_details.html
+  5. .\output\products.html
+  6. .\output\students.html
+
+HTML outputs (Phase 6 - Static Site Generator):
+  1. .\output\add_product.html
+  2. .\output\edit_product.html
+  3. .\output\index.html
+  4. .\output\products.html
+  5. .\output\product_details.html
+  6. .\output\students.html

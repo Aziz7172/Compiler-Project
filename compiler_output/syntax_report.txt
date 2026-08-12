@@ -1,0 +1,8 @@
+=== Syntax Error Report ===
+Date: Sun Aug 02 23:47:24 GMT+03:00 2026
+Total errors: 4
+
+  1. [app.py] Line 9, Col 10: mismatched input ':' expecting '{'
+  2. [app.py] Line 13, Col 19: mismatched input ':' expecting '{'
+  3. [app.py] Line 17, Col 25: mismatched input ':' expecting {'=', ')', ','}
+  4. [app.py] Line 20, Col 25: mismatched input ':' expecting {')', '{'}

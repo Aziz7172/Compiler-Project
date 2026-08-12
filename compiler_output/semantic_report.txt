@@ -1,0 +1,9 @@
+=== Semantic Analysis Report ===
+Date: Mon Aug 03 23:59:37 GMT+03:00 2026
+
+Errors found: 1
+
+  1. [Line: 2, Col: 0] (TYPE_ERROR): Cannot iterate over type 'number'
+
+--- Summary by Type ---
+  TYPE_ERROR                     : 1
