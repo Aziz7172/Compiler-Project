@@ -4,8 +4,9 @@ app = Flask(__name__)
 
 products = [
     {"id": 1, "name": "Widget", "price": 25, "details": "A very useful widget"},
-    {"id": 2, "name": "Gadget", "price": 45, "details": "An amazing new gadget"},
-    {"id": 3, "name": "Doohickey", "price": 15, "details": "A cheap and cheerful doohickey"}
+    {"id": 3, "name": "Doohickey", "price": 15, "details": "A cheap and cheerful doohickey"},
+    {"id": 4, "name": "llllara", "price": 110, "details": ""},
+    {"id": 5, "name": "kjjghhjk", "price": 44, "details": ""}
 ]
 product = {"id": 1, "name": "Widget", "price": 25, "details": "A very useful widget"}
 students = [

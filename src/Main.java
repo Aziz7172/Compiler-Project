@@ -24,10 +24,12 @@ public class Main {
         String projectDir = ".";
         String singleFile = null;
         boolean singleFileMode = false;
+        boolean serverMode = false;
 
-        if (args.length > 0) {
-            String arg = args[0];
-            if (arg.endsWith(".py") || arg.endsWith(".txt") || arg.endsWith(".jinja")) {
+        for (String arg : args) {
+            if (arg.equals("--server")) {
+                serverMode = true;
+            } else if (arg.endsWith(".py") || arg.endsWith(".txt") || arg.endsWith(".jinja")) {
                 singleFileMode = true;
                 singleFile = arg;
             } else {
@@ -36,7 +38,10 @@ public class Main {
         }
 
         try {
-            if (singleFileMode) {
+            if (serverMode) {
+                DevServer server = new DevServer(projectDir);
+                server.start();
+            } else if (singleFileMode) {
                 runSingleFile(singleFile);
             } else {
                 CompilerPipeline pipeline = new CompilerPipeline(projectDir);

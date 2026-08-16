@@ -1,8 +1,32 @@
 === Syntax Error Report ===
-Date: Sun Aug 02 23:47:24 GMT+03:00 2026
-Total errors: 4
+Date: Mon Aug 10 23:53:53 GMT+03:00 2026
+Total errors: 28
 
-  1. [app.py] Line 9, Col 10: mismatched input ':' expecting '{'
-  2. [app.py] Line 13, Col 19: mismatched input ':' expecting '{'
-  3. [app.py] Line 17, Col 25: mismatched input ':' expecting {'=', ')', ','}
-  4. [app.py] Line 20, Col 25: mismatched input ':' expecting {')', '{'}
+  1. [app.py] Line 6, Col 79: extraneous input ',' expecting {<EOF>, NEWLINE}
+  2. [app.py] Line 7, Col 4: extraneous input '{' expecting {<EOF>, NEWLINE}
+  3. [app.py] Line 8, Col 4: extraneous input '{' expecting {<EOF>, NEWLINE}
+  4. [app.py] Line 9, Col 4: extraneous input '{' expecting {<EOF>, NEWLINE}
+  5. [app.py] Line 10, Col 0: extraneous input ']' expecting {<EOF>, NEWLINE}
+  6. [app.py] Line 11, Col 0: extraneous input 'product' expecting {<EOF>, NEWLINE}
+  7. [app.py] Line 12, Col 0: extraneous input 'students' expecting {<EOF>, NEWLINE}
+  8. [app.py] Line 13, Col 4: extraneous input '{' expecting {<EOF>, NEWLINE}
+  9. [app.py] Line 14, Col 4: extraneous input '{' expecting {<EOF>, NEWLINE}
+  10. [app.py] Line 15, Col 4: extraneous input '{' expecting {<EOF>, NEWLINE}
+  11. [app.py] Line 16, Col 0: extraneous input ']' expecting {<EOF>, NEWLINE}
+  12. [app.py] Line 17, Col 0: extraneous input 'iterations' expecting {<EOF>, NEWLINE}
+  13. [app.py] Line 18, Col 0: extraneous input 'user_name' expecting {<EOF>, NEWLINE}
+  14. [app.py] Line 20, Col 0: extraneous input '@' expecting {<EOF>, NEWLINE}
+  15. [app.py] Line 21, Col 0: extraneous input 'def' expecting {<EOF>, NEWLINE}
+  16. [app.py] Line 22, Col 4: extraneous input 'return' expecting {<EOF>, NEWLINE}
+  17. [app.py] Line 23, Col 0: extraneous input '}' expecting {<EOF>, NEWLINE}
+  18. [app.py] Line 25, Col 0: extraneous input '@' expecting {<EOF>, NEWLINE}
+  19. [app.py] Line 26, Col 0: extraneous input 'def' expecting {<EOF>, NEWLINE}
+  20. [app.py] Line 27, Col 4: extraneous input 'return' expecting {<EOF>, NEWLINE}
+  21. [app.py] Line 28, Col 0: extraneous input '}' expecting {<EOF>, NEWLINE}
+  22. [app.py] Line 30, Col 0: extraneous input '@' expecting {<EOF>, NEWLINE}
+  23. [app.py] Line 31, Col 0: extraneous input 'def' expecting {<EOF>, NEWLINE}
+  24. [app.py] Line 32, Col 4: extraneous input 'return' expecting {<EOF>, NEWLINE}
+  25. [app.py] Line 33, Col 0: extraneous input '}' expecting {<EOF>, NEWLINE}
+  26. [app.py] Line 35, Col 0: extraneous input 'if' expecting {<EOF>, NEWLINE}
+  27. [app.py] Line 36, Col 4: extraneous input 'app' expecting {<EOF>, NEWLINE}
+  28. [app.py] Line 37, Col 0: extraneous input '}' expecting {<EOF>, NEWLINE}

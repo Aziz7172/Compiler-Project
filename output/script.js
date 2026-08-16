@@ -10,18 +10,20 @@
  *
  *  ── WHAT THIS SCRIPT DOES ──────────────────────────────────────────────────
  *  1. Waits for the DOM to be ready (DOMContentLoaded).
- *  2. Seeds localStorage with default products the very first time the app
- *     runs, so the table is never empty.
- *  3. Reads the products from localStorage and DYNAMICALLY renders every
+ *  2. HTTP mode (DevServer): rows are server-rendered and add/delete go through
+ *     the /api endpoints — the client only wires delete/search/form events.
+ *  3. FILE mode (file://): seeds localStorage with default products the very
+ *     first time the app runs, so the table is never empty.
+ *  4. Reads the products from localStorage and DYNAMICALLY renders every
  *     <tr> into <tbody id="tableBody">. localStorage is the single source of
  *     truth — the static rows emitted by Jinja are intentionally ignored so
  *     the UI always matches the stored data.
- *  4. Binds delete / edit / search / form events AFTER the first render.
- *  5. Delete  → fade-out the row, update localStorage, re-render.
- *  6. Search  → filters visible rows as the user types in #searchInput.
- *  7. Forms   → save (add) or update (edit) in localStorage, then redirect
- *               back to products.html.
- *  8. Edit page → pre-fills the form from localStorage via ?id= query param.
+ *  5. Binds delete / edit / search / form events AFTER the first render.
+ *  6. Delete  → fade-out the row, update localStorage, re-render (file mode).
+ *  7. Search  → filters visible rows as the user types in #searchInput.
+ *  8. Forms   → save (add) or update (edit) in localStorage (file mode), or
+ *               POST to /api/add (HTTP mode), then redirect to products.html.
+ *  9. Edit page → pre-fills the form from localStorage via ?id= query param.
  *
  *  Pure Vanilla JavaScript. No jQuery. console.log() at every step so you can
  *  trace execution in the browser DevTools (F12).
@@ -37,6 +39,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var STORAGE_KEY = 'products';          // localStorage key (plural form)
     var ENTITY      = 'product';           // singular entity name
+
+    // Progressive enhancement: over http:// (DevServer) the server is the
+    // source of truth and renders the rows itself — add/delete go through the
+    // API. Over file:// we fall back to the localStorage-only mode below.
+    var IS_HTTP = (window.location.protocol === 'http:' || window.location.protocol === 'https:');
 
     // Default seed data — only used the very first time the app runs.
     var DEFAULT_PRODUCTS = [
@@ -218,6 +225,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
+            if (IS_HTTP) {
+                // Server mode: the delete endpoint rewrites app.py, regenerates
+                // the site and 303-redirects back to /products.html.
+                console.log('[delete] HTTP mode -> GET /api/delete?id=' + id);
+                window.location.href = '/api/delete?id=' + encodeURIComponent(id);
+                return;
+            }
+
             if (!deleteProduct(id)) { return; }
 
             var row = deleteBtn.closest('tr');
@@ -270,6 +285,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 e.preventDefault();
                 console.log('[form] Submit intercepted on ' + (form.id || 'a generic-form') + '.');
 
+                if (IS_HTTP) {
+                    var id = form.getAttribute('data-id');
+                    if (id) {
+                        // Edit page: no server-side edit endpoint yet — don't
+                        // destroy server data, just go back to the list.
+                        console.log('[form] Edit over http API not wired — returning to products.html.');
+                        window.location.href = 'products.html';
+                    } else {
+                        // Add page: hand off to /api/add (server rewrites app.py,
+                        // regenerates, then 303-redirects to products.html).
+                        console.log('[form] HTTP mode -> POST /api/add.');
+                        form.action = '/api/add';
+                        form.method = 'post';
+                        e.preventDefault();
+                        form.submit();
+                    }
+                    return;
+                }
+
                 var id   = form.getAttribute('data-id');
                 var list = readProducts();
 
@@ -318,7 +352,7 @@ document.addEventListener('DOMContentLoaded', function () {
          * populate the form. localStorage is the source of truth, so this
          * overrides whatever the static HTML rendered. */
         var urlId = getUrlParam('id');
-        if (urlId !== null && form) {
+        if (!IS_HTTP && urlId !== null && form) {
             var target = findById(readProducts(), urlId);
             if (target) {
                 form.setAttribute('data-id', target.id);
@@ -358,9 +392,17 @@ document.addEventListener('DOMContentLoaded', function () {
      *  5. BOOTSTRAP — THE EXACT ORDER THAT MAKES EVERYTHING WORK:
      *     1. seed localStorage    2. render rows     3. THEN bind events
      * ══════════════════════════════════════════════════════════════════════ */
-    ensureInitialized();   // 1. seed default products if storage is empty
-    renderTable();         // 2. build all <tr> from localStorage
-    renderDetails();       // 3. (re)populate the details page from localStorage
-    bindEvents();          // 4. wire delete / edit / search / form listeners
+    // Over http:// the DevServer renders the rows and owns add/delete, so we
+    // skip seeding and keep the server-rendered table. Over file:// we use the
+    // localStorage source-of-truth flow below.
+    if (IS_HTTP) {
+        console.log('[app] HTTP mode — keeping server-rendered rows, wiring events.');
+        bindEvents();
+    } else {
+        ensureInitialized();   // 1. seed default products if storage is empty
+        renderTable();         // 2. build all <tr> from localStorage
+        renderDetails();       // 3. (re)populate the details page from localStorage
+        bindEvents();          // 4. wire delete / edit / search / form listeners
+    }
     console.log('[app] Bootstrap complete. Interactivity enabled.');
 });

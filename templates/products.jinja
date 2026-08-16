@@ -48,7 +48,19 @@
             </tr>
         </thead>
         <tbody id="tableBody">
-            <!-- Rows are rendered dynamically by script.js from localStorage -->
+{% for product in products %}
+            <tr data-id="{{ product.id }}" data-entity="product">
+                <td>{{ product.id }}</td>
+                <td>{{ product.name }}</td>
+                <td>${{ product.price }}</td>
+                <td>{{ product.details }}</td>
+                <td>
+                    <a class="btn btn-view" href="/product/{{ product.id }}">View</a>
+                    <a class="btn btn-edit" href="/edit/{{ product.id }}" data-entity="product" data-id="{{ product.id }}">Edit</a>
+                    <a class="btn btn-delete" href="/delete/{{ product.id }}" data-entity="product" data-id="{{ product.id }}">Delete</a>
+                </td>
+            </tr>
+{% endfor %}
         </tbody>
     </table>
 </div>
