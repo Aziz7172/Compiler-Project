@@ -10,20 +10,18 @@
  *
  *  ── WHAT THIS SCRIPT DOES ──────────────────────────────────────────────────
  *  1. Waits for the DOM to be ready (DOMContentLoaded).
- *  2. HTTP mode (DevServer): rows are server-rendered and add/delete go through
- *     the /api endpoints — the client only wires delete/search/form events.
- *  3. FILE mode (file://): seeds localStorage with default products the very
- *     first time the app runs, so the table is never empty.
- *  4. Reads the products from localStorage and DYNAMICALLY renders every
+ *  2. Seeds localStorage with default products the very first time the app
+ *     runs, so the table is never empty.
+ *  3. Reads the products from localStorage and DYNAMICALLY renders every
  *     <tr> into <tbody id="tableBody">. localStorage is the single source of
  *     truth — the static rows emitted by Jinja are intentionally ignored so
  *     the UI always matches the stored data.
- *  5. Binds delete / edit / search / form events AFTER the first render.
- *  6. Delete  → fade-out the row, update localStorage, re-render (file mode).
- *  7. Search  → filters visible rows as the user types in #searchInput.
- *  8. Forms   → save (add) or update (edit) in localStorage (file mode), or
- *               POST to /api/add (HTTP mode), then redirect to products.html.
- *  9. Edit page → pre-fills the form from localStorage via ?id= query param.
+ *  4. Binds delete / edit / search / form events AFTER the first render.
+ *  5. Delete  → fade-out the row, update localStorage, re-render.
+ *  6. Search  → filters visible rows as the user types in #searchInput.
+ *  7. Forms   → save (add) or update (edit) in localStorage, then redirect
+ *               back to products.html.
+ *  8. Edit page → pre-fills the form from localStorage via ?id= query param.
  *
  *  Pure Vanilla JavaScript. No jQuery. console.log() at every step so you can
  *  trace execution in the browser DevTools (F12).
@@ -37,15 +35,12 @@ document.addEventListener('DOMContentLoaded', function () {
      * ══════════════════════════════════════════════════════════════════════ */
     console.log('[app] DOM Loaded — script.js is running.');
 
-    var STORAGE_KEY = 'products';          // localStorage key (plural form)
-    var ENTITY      = 'product';           // singular entity name
+    var STORAGE_KEY    = 'products';        // localStorage key (plural form)
+    var BUILD_ID_KEY   = 'products_build_id';  // compiler build that last seeded storage
+    var ENTITY         = 'product';         // singular entity name
 
-    // Progressive enhancement: over http:// (DevServer) the server is the
-    // source of truth and renders the rows itself — add/delete go through the
-    // API. Over file:// we fall back to the localStorage-only mode below.
-    var IS_HTTP = (window.location.protocol === 'http:' || window.location.protocol === 'https:');
-
-    // Default seed data — only used the very first time the app runs.
+    // Fallback seed data — only used if the compiler-rendered static rows
+    // are absent (e.g. the template has no {% for %} loop over products).
     var DEFAULT_PRODUCTS = [
         { id: 1, name: 'Widget',    price: 25, image: '', details: 'A very useful widget' },
         { id: 2, name: 'Gadget',    price: 45, image: '', details: 'An amazing new gadget' },
@@ -78,15 +73,95 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /**
-     * Seed defaults when localStorage is empty (first ever visit).
-     * Guarantees the app never starts with an empty table.
+     * Harvest the static rows the Java compiler rendered from app.py
+     * (templates/products.jinja loops over the `products` context).
+     * Returns an array of product objects, or [] if none found.
+     */
+    function harvestStaticRows() {
+        if (!tableBody) { return []; }
+        var harvested = [];
+        tableBody.querySelectorAll('tr[data-id]').forEach(function (tr) {
+            var tds = tr.querySelectorAll('td');
+            if (tds.length < 4) { return; }
+            harvested.push({
+                id:      Number(tr.getAttribute('data-id')) || Number((tds[0].textContent || '').replace(/[^0-9.]/g, '')) || 0,
+                name:    (tds[1] ? tds[1].textContent : '').trim(),
+                price:   Number(((tds[2] ? tds[2].textContent : '')).replace(/[^0-9.]/g, '')) || 0,
+                image:   '',
+                details: (tds[3] ? tds[3].textContent : '').trim()
+            });
+        });
+        return harvested;
+    }
+
+    /**
+     * Read the JSON payload the Java compiler injects into every generated
+     * page (<script id="compiled-context" type="application/json">).
+     * Contains {"buildId": "...", "products": [...]} straight from app.py.
+     * Returns null when the page has no payload (e.g. opened via file://
+     * from an older build).
+     */
+    function readCompiledPayload() {
+        var el = document.getElementById('compiled-context');
+        if (!el) { return null; }
+        try {
+            return JSON.parse(el.textContent);
+        } catch (err) {
+            console.error('[init] Failed to parse #compiled-context payload:', err);
+            return null;
+        }
+    }
+
+    /**
+     * Seed / re-seed localStorage from the compiled app.py data.
+     *
+     * The compiler stamps every generated page with a unique buildId and the
+     * compiled `products` list. Whenever the page's buildId differs from the
+     * one recorded in localStorage, the compiler has re-run — so storage is
+     * RE-SEEDED from app.py, restoring deleted products and dropping stale
+     * ones. Between builds, user edits (add/delete/edit) are preserved.
      */
     function ensureInitialized() {
-        if (localStorage.getItem(STORAGE_KEY) === null) {
-            console.log('[init] No "' + STORAGE_KEY + '" found — seeding default products.');
-            writeProducts(DEFAULT_PRODUCTS);
+        var payload = readCompiledPayload();
+        var compiledProducts = (payload && Array.isArray(payload.products)) ? payload.products : null;
+        var buildId = (payload && payload.buildId) ? payload.buildId : null;
+        var storedBuildId = localStorage.getItem(BUILD_ID_KEY);
+
+        if (buildId !== null && buildId !== storedBuildId) {
+            // ── New compiler build detected → restore the compiled state ──
+            if (compiledProducts !== null) {
+                console.log('[init] New build ' + buildId + ' detected (previous: ' + storedBuildId +
+                    ') — re-seeding ' + compiledProducts.length + ' product(s) from app.py.');
+                writeProducts(compiledProducts);
+            } else if (harvestStaticRows().length > 0) {
+                var rows = harvestStaticRows();
+                console.log('[init] New build detected, no JSON payload — seeding ' + rows.length +
+                    ' product(s) from the static table.');
+                writeProducts(rows);
+            } else {
+                console.log('[init] New build detected, no compiled data — seeding default products.');
+                writeProducts(DEFAULT_PRODUCTS);
+            }
+            localStorage.setItem(BUILD_ID_KEY, buildId);
+        } else if (localStorage.getItem(STORAGE_KEY) === null) {
+            // ── First ever visit (or storage cleared) ──
+            if (compiledProducts !== null) {
+                console.log('[init] No "' + STORAGE_KEY + '" found — seeding ' + compiledProducts.length +
+                    ' product(s) from the compiled app.py data.');
+                writeProducts(compiledProducts);
+            } else if (harvestStaticRows().length > 0) {
+                var staticRows = harvestStaticRows();
+                console.log('[init] No "' + STORAGE_KEY + '" found — seeding ' + staticRows.length +
+                    ' product(s) from the static table.');
+                writeProducts(staticRows);
+            } else {
+                console.log('[init] No "' + STORAGE_KEY + '" found and no compiled data — seeding default products.');
+                writeProducts(DEFAULT_PRODUCTS);
+            }
+            if (buildId !== null) { localStorage.setItem(BUILD_ID_KEY, buildId); }
         } else {
-            console.log('[init] "' + STORAGE_KEY + '" already exists in localStorage.');
+            console.log('[init] "' + STORAGE_KEY + '" exists and build ' + (buildId || '?') +
+                ' already applied — keeping user edits.');
         }
     }
 
@@ -96,6 +171,21 @@ document.addEventListener('DOMContentLoaded', function () {
             var id = Number(item.id) || 0;
             return id > max ? id : max;
         }, 0) + 1;
+    }
+
+    /**
+     * Live-update dashboard stat cards from localStorage.
+     * The compiler bakes {{ products|length }} into the static HTML at
+     * compile time; this overrides it at runtime so the "Total Products"
+     * stat always reflects the ACTUAL number of products (including
+     * user adds/deletes), in real time.
+     */
+    function renderStats() {
+        var statEl = document.getElementById('statTotalProducts');
+        if (!statEl) { return; }   // not the dashboard page
+        var count = readProducts().length;
+        statEl.textContent = String(count);
+        console.log('[stats] Total Products stat updated to ' + count + '.');
     }
 
     /** Escape user-entered text so it can never break out of the DOM. */
@@ -225,15 +315,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            if (IS_HTTP) {
-                // Server mode: the delete endpoint rewrites app.py, regenerates
-                // the site and 303-redirects back to /products.html.
-                console.log('[delete] HTTP mode -> GET /api/delete?id=' + id);
-                window.location.href = '/api/delete?id=' + encodeURIComponent(id);
-                return;
-            }
-
             if (!deleteProduct(id)) { return; }
+            renderStats();   // keep dashboard stat in sync after delete
 
             var row = deleteBtn.closest('tr');
             if (row) {
@@ -285,25 +368,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 e.preventDefault();
                 console.log('[form] Submit intercepted on ' + (form.id || 'a generic-form') + '.');
 
-                if (IS_HTTP) {
-                    var id = form.getAttribute('data-id');
-                    if (id) {
-                        // Edit page: no server-side edit endpoint yet — don't
-                        // destroy server data, just go back to the list.
-                        console.log('[form] Edit over http API not wired — returning to products.html.');
-                        window.location.href = 'products.html';
-                    } else {
-                        // Add page: hand off to /api/add (server rewrites app.py,
-                        // regenerates, then 303-redirects to products.html).
-                        console.log('[form] HTTP mode -> POST /api/add.');
-                        form.action = '/api/add';
-                        form.method = 'post';
-                        e.preventDefault();
-                        form.submit();
-                    }
-                    return;
-                }
-
                 var id   = form.getAttribute('data-id');
                 var list = readProducts();
 
@@ -339,6 +403,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 writeProducts(list);
+                renderStats();   // keep dashboard stat in sync after add/edit
                 console.log('[form] Redirecting to products.html...');
                 window.location.href = 'products.html';
             });
@@ -352,7 +417,7 @@ document.addEventListener('DOMContentLoaded', function () {
          * populate the form. localStorage is the source of truth, so this
          * overrides whatever the static HTML rendered. */
         var urlId = getUrlParam('id');
-        if (!IS_HTTP && urlId !== null && form) {
+        if (urlId !== null && form) {
             var target = findById(readProducts(), urlId);
             if (target) {
                 form.setAttribute('data-id', target.id);
@@ -392,17 +457,10 @@ document.addEventListener('DOMContentLoaded', function () {
      *  5. BOOTSTRAP — THE EXACT ORDER THAT MAKES EVERYTHING WORK:
      *     1. seed localStorage    2. render rows     3. THEN bind events
      * ══════════════════════════════════════════════════════════════════════ */
-    // Over http:// the DevServer renders the rows and owns add/delete, so we
-    // skip seeding and keep the server-rendered table. Over file:// we use the
-    // localStorage source-of-truth flow below.
-    if (IS_HTTP) {
-        console.log('[app] HTTP mode — keeping server-rendered rows, wiring events.');
-        bindEvents();
-    } else {
-        ensureInitialized();   // 1. seed default products if storage is empty
-        renderTable();         // 2. build all <tr> from localStorage
-        renderDetails();       // 3. (re)populate the details page from localStorage
-        bindEvents();          // 4. wire delete / edit / search / form listeners
-    }
+    ensureInitialized();   // 1. seed default products if storage is empty
+    renderTable();         // 2. build all <tr> from localStorage
+    renderDetails();       // 3. (re)populate the details page from localStorage
+    renderStats();         // 4. sync dashboard stat cards with localStorage
+    bindEvents();          // 5. wire delete / edit / search / form listeners
     console.log('[app] Bootstrap complete. Interactivity enabled.');
 });
